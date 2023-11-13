@@ -73,8 +73,10 @@ cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
   - 3) find clusters of numbers and use that to get a rough idea of where the grid is. We could skip this step, and start OCR'ing numbers before we've found the grid, then look for a sudoku like cluster of numbers to find where the grid is 
 
+### Warp Perspective
 
 ### OCR numbers
+
 
 ### ...
 
