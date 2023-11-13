@@ -21,8 +21,16 @@ I've done this before so should be easy enough. Key learning from last time are 
 Code *somewhat* similar to that should sort capturing a frame from the webcam and saving it to disk under ``imgName`` 
 
 
-### Convert images to grayscale colorspace
+### Convert images to ``grayscale`` colorspace
 
+After we've captured a frame from the webcam we want to convert it to ``grayscale``, we dont care about the images been in ``srgb`` as its not relevant to our task. 
+
+This is easy enough as ``CV2`` has a function made for this exact thing. 
+
+```
+cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+```
+*Parameter 1* is the frame we captured earlier, and *parameter 2* is the color space conversion we are doing. 
 
 ### Find Sudoku grid 
 
