@@ -69,7 +69,9 @@ cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
           - easily tweekable
           - not *very* technical
         - Drawbacks
-          - 
+          - need to order points 
+          - need to warp perspective to enable flat images
+          - this might find the outer rectangle of the sudoku pad instead of the pad *inside* the grid
 
   - 3) find clusters of numbers and use that to get a rough idea of where the grid is. We could skip this step, and start OCR'ing numbers before we've found the grid, then look for a sudoku like cluster of numbers to find where the grid is 
 
