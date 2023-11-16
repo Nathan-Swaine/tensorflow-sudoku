@@ -2,7 +2,38 @@
 
 ## checklist steps
 
-### Install RTOBJ package
+### [Install RTOBJD package](https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/latest/install.html)
+  **pip3 install --ignore-installed --upgrade tensorflow==2.5.0**
+
+  *NO GPU SUPPORT, LAPTOP NO LIKEY*
+
+  skipped COCOAPI install as ive already got it from *tensorflow-bsl* project
+
+  testing if RTOBJD package install is still working from *tensorflow-bsl*:
+    python object_detection/builders/model_builder_tf2_test.py
+
+  the above command gave me an error
+
+    ``` 
+      RuntimeError: module compiled against API version 0xe but this version of numpy is 0xd
+      RuntimeError: module compiled against API version 0xe but this version of numpy is 0xd
+      RuntimeError: module compiled against API version 0xe but this version of numpy is 0xd
+      RuntimeError: module compiled against API version 0xe but this version of numpy is 0xd
+    ```
+    - changed numpy version to 1.16.5
+      - uninstalled numpy in WSL 
+      - uninstalled numpy in PS
+      - installed numpy in PS
+      - inslled numpy in WSL with 
+        - ``conda install numpy==1.16.5``
+      - uninstalled and reinstalled pycocotools
+  - installed anaconda prompt
+    - ``python3 object_detection/builders/model_builder_tf2_test.py`` 
+    - would report that no moduel numpy was found, *however* ``pip3 show numpy`` would report numpy as been installed in ``natha\miniconda3\lib\site-packages`` so I copied numpy from that directory and pasted inside the ``C:\Users\natha\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.9_qbz5n2kfra8p0\LocalCache\local-packages\Python39\site-packages`` directory.
+    - running ``python3 object_detection/builders/model_builder_tf2_test.py`` now ran the test succesfully
+  
+
+
 
 ### Create Py script to get images from webcam and store em 
 
