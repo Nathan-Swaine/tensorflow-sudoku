@@ -36,7 +36,7 @@
 
 
 ### Create Py script to get images from webcam and store em 
-
+  
 ### Gather images from webcam with OpenCV
 
   I've done this before so should be easy enough. Key learning from last time are that webcam is not supported in WSL2. 
