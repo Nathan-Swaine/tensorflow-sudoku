@@ -1,5 +1,6 @@
 import cv2
 import sys
+import numpy as np
 def showImg(image):
   cv2.imshow("Original", image)
   cv2.waitKey(0)
@@ -23,16 +24,28 @@ def checkContour(image, contours):
   sides = len(cv2.approxPolyDP(biggestContour, 0.02 * cv2.arcLength(biggestContour, True), True))
   if sides ==4: 
     findPoints(biggestContour, image) 
-    #draw points on image
-    print(findPoints(biggestContour, image))
-    sys.exit()
+   
+  
     return image
   else: 
     print("Contour not  a rectangle")  
     sys.exit()
 
+
+def orderPoints(points): ##tricky function, warp perspective requires points to be in a specific order which this ensures
+  points = points.reshape((4, 2))
+  newPoints = np.zeros((4, 1, 2), dtype=np.int32)
+  add = points.sum(1)
+  newPoints[0] = points[np.argmin(add)]
+  newPoints[3] = points[np.argmax(add)]
+  diff = np.diff(points, axis=1)
+  newPoints[1] = points[np.argmin(diff)]
+  newPoints[2] = points[np.argmax(diff)]
+  return newPoints
+
 def findPoints(bigCountur, image):
   points = cv2.approxPolyDP(bigCountur, 0.02 * cv2.arcLength(bigCountur, True), True)
+  orderPoints(points)
   return points
   
 
