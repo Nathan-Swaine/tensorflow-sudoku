@@ -13,7 +13,7 @@ def capture_images():
   cv2.namedWindow("Webcam")
 
   # Initialize image counter
-  img_counter = 0
+  img_counter = 0 #update this when done adding imgs
 
   while True:
       # Read frame from the webcam
