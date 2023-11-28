@@ -14,8 +14,8 @@ def cnv2Thsh(image):
 
 def findContours(image):
   contours, _ = cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-  image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
   checkContour(image, contours)
+  
   return image
 
 def checkContour(image, contours):
@@ -24,13 +24,12 @@ def checkContour(image, contours):
   sides = len(cv2.approxPolyDP(biggestContour, 0.02 * cv2.arcLength(biggestContour, True), True))
   if sides ==4: 
     findPoints(biggestContour, image) 
-   
+    
   
     return image
   else: 
     print("Contour not  a rectangle")  
     sys.exit()
-
 
 def orderPoints(points): ##tricky function, warp perspective requires points to be in a specific order which this ensures
   points = points.reshape((4, 2))
@@ -41,19 +40,37 @@ def orderPoints(points): ##tricky function, warp perspective requires points to 
   diff = np.diff(points, axis=1)
   newPoints[1] = points[np.argmin(diff)]
   newPoints[2] = points[np.argmax(diff)]
+  print(newPoints)
   return newPoints
 
 def findPoints(bigCountur, image):
   points = cv2.approxPolyDP(bigCountur, 0.02 * cv2.arcLength(bigCountur, True), True)
-  orderPoints(points)
-  return points
+  points = orderPoints(points)
+  print(points)
+  image = cv2.drawContours(image, points, -1, (0,255,0), 1)
+ 
+  warpPoints(points, image)
   
+  return image 
+
+def warpPoints(points, image):
+  pts1 = np.float32(points)
+  width = 640
+  height = 480
+  pts2 = np.float32([[0, 0], [width, 0], [0, height], [width, height]])
+  matrix = cv2.getPerspectiveTransform(pts1, pts2)
+  image = cv2.warpPerspective(image, matrix, (width, height))
+  cv2.imshow("Warp", image)
+  cv2.waitKey(0)
+  cv2.destroyAllWindows()
+  sys.exit()  
+
+
+
 
 image = cv2.imread("image_0.jpg")
 image = cnv2Thsh(image)
 image = findContours(image)
-
-
 showImg(image)
 
 
