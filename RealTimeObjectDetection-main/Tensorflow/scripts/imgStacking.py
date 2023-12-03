@@ -89,6 +89,7 @@ def getPrediction(boxes):
     print("Error, model.h5 does not exist")
     sys.exit()
   result = []
+  above_threshold = 0
   for index, image in enumerate(boxes):
     ## PREPARE IMAGE
     img = np.asarray(image)
@@ -100,17 +101,16 @@ def getPrediction(boxes):
     os.environ['CUDA_VISIBLE_DEVICES'] = '-1' # disable gpu
     predictions = model.predict(img)
     classIndex = np.argmax(predictions, axis=-1)
-    #predictions = model.predict_classes(img) predict.classes does not exist in model for some reason 
     probabilityValue = np.amax(predictions)
     ## SAVE TO RESULT
-
     if probabilityValue > 0.8:
+      above_threshold += 1
       row = index // 9
       col = index % 9
-      print(f"Predicted class: {classIndex[0]}, Box number: {index}, Coordinates: ({row}, {col})")
-      
-      result.append(classIndex[0])
-    showImg(image) # show image
+      print(f"Predicted class: {classIndex[0]}, Box number: {index}, Coordinates: ({row}, {col})") 
+      result.append(classIndex[0])   
+    
+  print(f"Number of indices above 0.8 confidence: {above_threshold}") #prints 55 when it should print 36
   sys.exit()
   return result
 
