@@ -155,9 +155,14 @@
   ``cv2.warpPerspective`` does a good job of correcting the rotation of the contour / pads, although it might be benefical to try align the contour / pad *before* calling warp perspective. 
 
 ### OCR numbers
+  #### need to retrain model for CPU only
 
-*need to retrain model for CPU only*
-
+  Python OpenCV version: 4.2.0.36
+  numpy 1.18.1
+  sklearn 0.0
+  keras 2.3.1
+  matplotlib 3.1.3
+  tensorflow 2.0.0
 
 ### ...
 

@@ -89,7 +89,7 @@ def getPrediction(boxes):
     print("Error, model.h5 does not exist")
     sys.exit()
   result = []
-  for image in boxes:
+  for index, image in enumerate(boxes):
     ## PREPARE IMAGE
     img = np.asarray(image)
     img = img[4:img.shape[0] - 4, 4:img.shape[1] -4]
@@ -97,14 +97,20 @@ def getPrediction(boxes):
     img = img / 255
     img = img.reshape(1, 28, 28, 1)
     ## GET PREDICTION
+    os.environ['CUDA_VISIBLE_DEVICES'] = '-1' # disable gpu
     predictions = model.predict(img)
-    classIndex = model.predict_classes(img)
+    classIndex = np.argmax(predictions, axis=-1)
+    #predictions = model.predict_classes(img) predict.classes does not exist in model for some reason 
     probabilityValue = np.amax(predictions)
     ## SAVE TO RESULT
+
     if probabilityValue > 0.8:
+      row = index // 9
+      col = index % 9
+      print(f"Predicted class: {classIndex[0]}, Box number: {index}, Coordinates: ({row}, {col})")
+      
       result.append(classIndex[0])
-    else:
-      result.append(0)
+    showImg(image) # show image
   sys.exit()
   return result
 
