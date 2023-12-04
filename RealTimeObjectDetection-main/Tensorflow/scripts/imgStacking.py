@@ -47,7 +47,9 @@ def findPoints(bigCountur, image):
   points = cv2.approxPolyDP(bigCountur, 0.02 * cv2.arcLength(bigCountur, True), True)
   points = orderPoints(points)
   image = cv2.drawContours(image, points, -1, (0,255,0), 1)
+  image = cv2.imread("image_0.jpg") 
   image = warpPoints(points, image)
+  
   return image 
 
 def warpPoints(points, image):
@@ -61,12 +63,9 @@ def warpPoints(points, image):
 
 def imgSplit(image):
   boxes= []
-
-  if image.size % 9 != 0: #validate image is correct size
-    print("Image is not divisible by 9, reshaping array")
-    image= cv2.resize(image, (450, 450))
-    print(image.shape) #450,450,3
-    
+  image= cv2.resize(image, (450, 450))
+  image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+  showImg(image)
   rows = np.vsplit(image, 9)
   for r in rows:
     cols = np.hsplit(r, 9)
@@ -104,11 +103,11 @@ def getPrediction(boxes):
     probabilityValue = np.amax(predictions)
     ## SAVE TO RESULT
     if probabilityValue > 0.8:
-      above_threshold += 1
-      row = index // 9
-      col = index % 9
-      print(f"Predicted class: {classIndex[0]}, Box number: {index}, Coordinates: ({row}, {col})") 
       result.append(classIndex[0])   
+    above_threshold += 1
+    row = index // 9
+    col = index % 9
+    print(f"Predicted class: {classIndex[0]}, Box number: {index}, Coordinates: ({row}, {col})") 
     
   print(f"Number of indices above 0.8 confidence: {above_threshold}") #prints 55 when it should print 36
   sys.exit()
