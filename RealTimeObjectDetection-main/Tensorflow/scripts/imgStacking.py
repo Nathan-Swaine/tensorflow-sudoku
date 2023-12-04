@@ -2,15 +2,18 @@ import cv2
 import sys
 import numpy as np
 import os 
+import keras
+import keras_ocr
+
 def showImg(image):
   cv2.imshow("Original", image)
   cv2.waitKey(0)
   cv2.destroyAllWindows()
 
-def cnv2Thsh(image):
+def cnv2Thsh(image, blocksize=11):
   image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  # CONVERT IMAGE TO GRAY SCALE
-  image = cv2.GaussianBlur(image, (5, 5), 1)  # ADD GAUSSIAN BLUR
-  image = cv2.adaptiveThreshold(image, 255, 1, 1, 11, 2)  # APPLY ADAPTIVE THRESHOLD
+  image = cv2.GaussianBlur(image, (1,1), 1)  # ADD GAUSSIAN BLUR
+  image = cv2.adaptiveThreshold(image, 255, 1, 1, blocksize, 2)  # APPLY ADAPTIVE THRESHOLD
   return image
 
 def findContours(image):
@@ -63,9 +66,9 @@ def warpPoints(points, image):
 
 def imgSplit(image):
   boxes= []
-  image= cv2.resize(image, (450, 450))
-  image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-  showImg(image)
+  image= cv2.resize(image, (450, 450)) 
+  # image = cnv2Thsh(image, 23)
+
   rows = np.vsplit(image, 9)
   for r in rows:
     cols = np.hsplit(r, 9)
@@ -76,17 +79,13 @@ def imgSplit(image):
     print("Error, there are not 81 boxes, there are " + str(len(boxes)) + " boxes")
     sys.exit()
 
-  print(getPrediction(boxes))
+  
   return boxes
 
 def getPrediction(boxes):
-  import tensorflow as tf # dont import these till they are needed as they slow everything
-  from tensorflow.keras.models import load_model
-  if os.path.exists("myModel.h5"):
-    model = load_model("myModel.h5")
-  else: 
-    print("Error, model.h5 does not exist")
-    sys.exit()
+  # keras-ocr will automatically download pretrained weights for the detector and recognizer.
+  pipeline = keras_ocr.pipeline.Pipeline()
+
   result = []
   above_threshold = 0
   for index, image in enumerate(boxes):
@@ -94,28 +93,26 @@ def getPrediction(boxes):
     img = np.asarray(image)
     img = img[4:img.shape[0] - 4, 4:img.shape[1] -4]
     img = cv2.resize(img, (28, 28))
-    img = img / 255
-    img = img.reshape(1, 28, 28, 1)
     ## GET PREDICTION
-    os.environ['CUDA_VISIBLE_DEVICES'] = '-1' # disable gpu
-    predictions = model.predict(img)
-    classIndex = np.argmax(predictions, axis=-1)
-    probabilityValue = np.amax(predictions)
-    ## SAVE TO RESULT
-    if probabilityValue > 0.8:
-      result.append(classIndex[0])   
-    above_threshold += 1
-    row = index // 9
-    col = index % 9
-    print(f"Predicted class: {classIndex[0]}, Box number: {index}, Coordinates: ({row}, {col})") 
-    
-  print(f"Number of indices above 0.8 confidence: {above_threshold}") #prints 55 when it should print 36
-  sys.exit()
-  return result
+    if img.size > 0:  # Check if the image is not empty
+      predictions = pipeline.recognize([img])  # Pass a list of images to recognize method
+
+      # Each list of predictions is a list of (word, box) tuples.
+      for prediction in predictions[0]:
+        word, box = prediction
+        print(f"Predicted word: {word}, Box number: {index}")
+        print(f"Coordinates: {box}")
+        showImg(img)  # Display the predicted image
+    else:
+      print(f"Empty image at box number: {index}")
+  
+image = cv2.imread("image_0.jpg")
+image = cnv2Thsh(image, 11)
+image = findContours(image)
 
   
 image = cv2.imread("image_0.jpg")
-image = cnv2Thsh(image)
+image = cnv2Thsh(image, 11)
 image = findContours(image)
 imgSplit(image)
 showImg(image)
