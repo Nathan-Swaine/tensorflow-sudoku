@@ -78,8 +78,7 @@ def imgSplit(image):
   if len(boxes) != 81:
     print("Error, there are not 81 boxes, there are " + str(len(boxes)) + " boxes")
     sys.exit()
-
-  
+ 
   return boxes
 
 def getPrediction(boxes):
@@ -88,23 +87,24 @@ def getPrediction(boxes):
 
   result = []
   above_threshold = 0
-  for index, image in enumerate(boxes):
+  for index, image in enumerate(boxes): # for each image in boxes[]
     ## PREPARE IMAGE
     img = np.asarray(image)
     img = img[4:img.shape[0] - 4, 4:img.shape[1] -4]
     img = cv2.resize(img, (28, 28))
-    ## GET PREDICTION
+    
     if img.size > 0:  # Check if the image is not empty
-      predictions = pipeline.recognize([img])  # Pass a list of images to recognize method
-
-      # Each list of predictions is a list of (word, box) tuples.
-      for prediction in predictions[0]:
-        word, box = prediction
-        print(f"Predicted word: {word}, Box number: {index}")
-        print(f"Coordinates: {box}")
-        showImg(img)  # Display the predicted image
+      predictions = pipeline.recognize([img])  # Pass the current img and get a tuple back
+      for prediction in predictions[0]: # for each value (prediction) in the tuple
+        word, box = prediction # assign the first value in the prediciton tuple
+        result.append(word) # append the value
+       
     else:
       print(f"Empty image at box number: {index}")
+    result.append(0) # when prediciton is empty because there is no text in the img 
+    
+  print(str(result))
+  
   
 image = cv2.imread("image_0.jpg")
 image = cnv2Thsh(image, 11)
@@ -114,5 +114,7 @@ image = findContours(image)
 image = cv2.imread("image_0.jpg")
 image = cnv2Thsh(image, 11)
 image = findContours(image)
-imgSplit(image)
+
+getPrediction(imgSplit(image))
+
 showImg(image)
