@@ -98,21 +98,13 @@ def getPrediction(boxes):
       predictions = pipeline.recognize([img])  # Pass a list of images to recognize method
 
       # Each list of predictions is a list of (word, box) tuples.
-      if predictions:
-        word, box = predictions[0][0]
-        result.append(word)
+      for prediction in predictions[0]:
+        word, box = prediction
         print(f"Predicted word: {word}, Box number: {index}")
         print(f"Coordinates: {box}")
         showImg(img)  # Display the predicted image
-      else:
-        result.append(0)
-        print(f"No prediction for box number: {index}")
     else:
-      result.append(0)
       print(f"Empty image at box number: {index}")
-
-  result.append(0)
-  print(result)
   
 image = cv2.imread("image_0.jpg")
 image = cnv2Thsh(image, 11)
